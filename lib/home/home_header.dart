@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:jd_demo/common/constant.dart';
 import 'package:jd_demo/common/text_switch.dart';
@@ -5,6 +7,7 @@ import 'package:jd_demo/common/utils/screen_util.dart';
 import 'package:jd_demo/data/jd_icons.dart';
 import 'package:jd_demo/demo/demo_list.dart';
 import 'package:jd_demo/main.dart';
+import 'package:loop_page_view/loop_page_view.dart';
 import 'package:provider/provider.dart';
 
 class HomeHeader extends StatelessWidget {
@@ -79,9 +82,8 @@ class HomeSearch extends StatelessWidget {
           ),
           Expanded(
               flex: 1,
-              child: Text(
-                '123456',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
+              child: _AutoChangedText(
+                data: ['dior口红礼盒', '修甲套装', '王国之泪', 'Switch', '七夕节好礼'],
               )),
           Icon(
             JdDemoIcons.camera,
@@ -111,6 +113,39 @@ class HomeSearch extends StatelessWidget {
   }
 }
 
+class _AutoChangedText extends StatefulWidget {
+  final List<String> data;
+
+  const _AutoChangedText({super.key, required this.data});
+
+  @override
+  State<_AutoChangedText> createState() => _AutoChangedTextState();
+}
+
+class _AutoChangedTextState extends State<_AutoChangedText> {
+  late Timer _timer;
+  int _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      setState(() {
+        _index++;
+        _index = _index % widget.data.length;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      widget.data[_index],
+      style: const TextStyle(fontSize: 18, color: Colors.grey),
+    );
+  }
+}
+
 class HomeHeadSale extends StatelessWidget {
   final String saleStr;
 
@@ -119,7 +154,7 @@ class HomeHeadSale extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 120,
+      width: 110,
       height: 48,
       child: Stack(
         children: [
@@ -127,30 +162,78 @@ class HomeHeadSale extends StatelessWidget {
               left: 25,
               top: 14,
               child: Container(
-                height: 24,
-                // 设置边框阴影效果
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFD993A),
-                  borderRadius: BorderRadius.circular(14),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x99FD8224),
-                      offset: Offset(0, 0),
-                      blurRadius: 4,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: Center(
-                    child: Text(
-                  saleStr,
-                  style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                )),
-              )),
+                  height: 24,
+                  width: 85,
+                  // 设置边框阴影效果
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFD993A),
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x99FD8224),
+                        offset: Offset(0, 0),
+                        blurRadius: 4,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.only(left: 5),
+                  child: const _AutoLoopTextPager(
+                    height: 24,
+                    data: ['跨店满减', '300减30', 'saber最帅'],
+                  ))),
           const Image(image: AssetImage('images/jd_mask.png'), width: 36, height: 48),
         ],
       ),
+    );
+  }
+}
+
+class _AutoLoopTextPager extends StatefulWidget {
+  final List<String> data;
+  final double height;
+
+  const _AutoLoopTextPager({super.key, required this.data, required this.height});
+
+  @override
+  State<_AutoLoopTextPager> createState() => _AutoLoopTextPagerState();
+}
+
+class _AutoLoopTextPagerState extends State<_AutoLoopTextPager> {
+  late LoopPageController _pageController;
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = LoopPageController();
+    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LoopPageView.builder(
+      scrollDirection: Axis.vertical,
+      controller: _pageController,
+      itemCount: widget.data.length,
+      itemBuilder: (context, index) {
+        return SizedBox(
+          height: widget.height,
+          child: Center(
+            child: Text(widget.data[index],
+                style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+          ),
+        );
+      },
     );
   }
 }

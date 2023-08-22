@@ -17,14 +17,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.13.0"
-  animated_switch:
-    dependency: "direct main"
-    description:
-      name: animated_switch
-      sha256: "3c37856c65bf8903fd03b8418b59ebf8395258cfe3131763fc3e2d9038351b61"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.2"
   args:
     dependency: transitive
     description:
@@ -235,14 +227,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_toggle_tab:
-    dependency: "direct main"
-    description:
-      name: flutter_toggle_tab
-      sha256: "90ad0d050f656df677998825f985637d010117a1793828cd7e6dadada4ecd2c5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.4.1"
   frontend_server_client:
     dependency: transitive
     description:
@@ -331,6 +315,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  loop_page_view:
+    dependency: "direct main"
+    description:
+      name: loop_page_view
+      sha256: ed0059c44e29fbdaf1f865cb4511820e6a0e29996a386e05c80d086ce0cf1a00
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.5"
   matcher:
     dependency: transitive
     description:

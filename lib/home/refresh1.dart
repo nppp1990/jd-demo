@@ -108,7 +108,7 @@ class _HomeRefreshPage1State extends State<HomeRefreshPage1> {
 
   @override
   Widget build(BuildContext context) {
-    _twiceTriggerDistance ??= testBackBottomHeight - (getStatusHeight(context) + homeHeader1 + homeSearch1);
+    _twiceTriggerDistance ??= homeBackBottomViewHeight - (getStatusHeight(context) + homeHeader1 + homeSearch1);
 
     return RefreshConfiguration.copyAncestor(
       context: context,
@@ -168,7 +168,7 @@ class TestBottom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: testBackBottomHeight + paddingBottom,
+      height: homeBackBottomViewHeight + paddingBottom,
       width: double.infinity,
       color: beautyBgColor,
       child: Padding(
@@ -227,7 +227,7 @@ class RefreshNextPage extends StatelessWidget {
           ),
         )),
         Container(
-            height: testBackBottomHeight,
+            height: homeBackBottomViewHeight,
             color: hideBottom ? beautyBgColor : null,
             child: Offstage(offstage: hideBottom, child: const TestBottom())),
       ],
