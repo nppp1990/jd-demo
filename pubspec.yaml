@@ -42,6 +42,7 @@ dependencies:
   retrofit: ^4.0.1
   provider: ^6.0.5
   loop_page_view: ^1.2.5
+  smooth_page_indicator: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +82,8 @@ flutter:
     - images/beauty3.jpeg
     - images/beauty4.jpeg
     - images/beauty5.jpeg
+    - images/avatar1.jpeg
+    - images/avatar2.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

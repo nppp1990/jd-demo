@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jd_demo/common/refresh/jd_refresh_indicator.dart';
+import 'package:jd_demo/demo/demo_shiny.dart';
+import 'package:jd_demo/demo/demo_smooth_page_indicator.dart';
+
 
 class DemoList extends StatelessWidget {
   const DemoList({Key? key}) : super(key: key);
@@ -7,33 +9,28 @@ class DemoList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("DemoList")),
-      body: const Test1(),
-    );
-  }
-}
-
-class Test1 extends StatelessWidget {
-  const Test1({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      // width: 200,
-      height: 500,
-      child: JdRefreshIndicator(
-        onRefresh: () async {
-          await Future.delayed(const Duration(seconds: 2));
-        },
-        child: ListView.builder(
-          itemCount: 20,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              title: Text("item $index"),
-            );
-          },
-        ),
-      ),
-    );
+        appBar: AppBar(title: const Text("DemoList")),
+        body: ListView(
+          children: [
+            ListTile(
+              title: const Text('shiny demo'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ShinyTextDemo()),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('page indicator demo'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const PageIndicatorDemo()),
+                );
+              },
+            ),
+          ],
+        ));
   }
 }

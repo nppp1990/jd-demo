@@ -50,6 +50,7 @@ class MyApp extends StatelessWidget {
             useMaterial3: true,
           ),
           home: Scaffold(
+              backgroundColor: white2,
               body: const TestHome(),
               floatingActionButton: FloatingActionButton(
                 onPressed: () async {

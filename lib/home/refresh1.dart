@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jd_demo/common/constant.dart';
 import 'package:jd_demo/common/utils/screen_util.dart';
 import 'package:jd_demo/home/home_category.dart';
+import 'package:jd_demo/home/home_grid_category.dart';
 import 'package:jd_demo/main.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -73,17 +74,19 @@ class _HomeRefreshPage1State extends State<HomeRefreshPage1> {
               return const HomeCategory();
             case 1:
               return Container(
-                padding: const EdgeInsets.all(10),
-                height: 170,
-                color: Colors.white,
-                child: Container(
-                    decoration: BoxDecoration(
-                      image: const DecorationImage(
-                          image: AssetImage('images/beauty5.jpeg'), fit: BoxFit.fill, alignment: Alignment.center),
-                      borderRadius: BorderRadius.circular(10),
-                    )),
+                padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+                height: 160,
+                color: beautyBgColor,
+                child: const Image(image: AssetImage('images/beauty5.jpeg'), fit: BoxFit.fill, alignment: Alignment.center),
+                // child: Container(
+                //     decoration: BoxDecoration(
+                //       image: const DecorationImage(
+                //           image: AssetImage('images/beauty5.jpeg'), fit: BoxFit.fill, alignment: Alignment.center),
+                //       borderRadius: BorderRadius.circular(10),
+                //     )),
               );
             case 2:
+              return const HomeGirdCategory();
             case 3:
             case 4:
               return SizedBox(

@@ -248,7 +248,6 @@ class HomeMessage extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => const DemoList()));
-        print('-----点击了消息');
       },
       child: SizedBox(
           width: 36,
