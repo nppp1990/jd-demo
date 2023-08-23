@@ -49,16 +49,10 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
           ),
-          home: Scaffold(
+          home: const Scaffold(
               backgroundColor: white2,
-              body: const TestHome(),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () async {
-                  // HomePageInfoResult res = await RequestManager.instance.getHomePageInfo();
-                  // print(res);
-                },
-                child: const Icon(Icons.add),
-              )),
+              body: TestHome(),
+             ),
         ),
       ),
     );

@@ -77,7 +77,8 @@ class _HomeRefreshPage1State extends State<HomeRefreshPage1> {
                 padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
                 height: 160,
                 color: beautyBgColor,
-                child: const Image(image: AssetImage('images/beauty5.jpeg'), fit: BoxFit.fill, alignment: Alignment.center),
+                child: const Image(
+                    image: AssetImage('images/beauty5.jpeg'), fit: BoxFit.fill, alignment: Alignment.center),
                 // child: Container(
                 //     decoration: BoxDecoration(
                 //       image: const DecorationImage(
@@ -88,11 +89,70 @@ class _HomeRefreshPage1State extends State<HomeRefreshPage1> {
             case 2:
               return const HomeGirdCategory();
             case 3:
+              return Card(
+                margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                shadowColor: Colors.black,
+                color: white2,
+                elevation: 4,
+                child: Container(
+                  height: 100,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white, width: 1),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      '懒得写UI了，就这样吧',
+                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              );
             case 4:
-              return SizedBox(
-                height: 50,
-                child: Center(
-                    child: Text('todo$index', style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold))),
+              return Row(
+                children: [
+                  Expanded(
+                      child: Card(
+                    margin: const EdgeInsets.only(left: 10),
+                    shadowColor: Colors.black,
+                    color: white2,
+                    elevation: 4,
+                    child: Container(
+                      height: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          '懒得写UI了，就这样吧',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  )),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                      child: Card(
+                    margin: const EdgeInsets.only(right: 10),
+                    shadowColor: Colors.black,
+                    color: white2,
+                    elevation: 4,
+                    child: Container(
+                      height: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          '懒得写UI了，就这样吧',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  )),
+                ],
               );
             default:
               return Container(
