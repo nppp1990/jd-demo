@@ -10,8 +10,23 @@ import 'package:jd_demo/main.dart';
 import 'package:loop_page_view/loop_page_view.dart';
 import 'package:provider/provider.dart';
 
-class HomeHeader extends StatelessWidget {
-  const HomeHeader({Key? key}) : super(key: key);
+class HomeHeader extends StatefulWidget {
+  ValueChanged<bool>? onChanged;
+
+  HomeHeader({super.key, this.onChanged});
+
+  @override
+  State<HomeHeader> createState() => _HomeHeaderState();
+}
+
+class _HomeHeaderState extends State<HomeHeader> {
+  late ValueNotifier<bool> _isOnNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    _isOnNotifier = ValueNotifier(true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,41 +34,61 @@ class HomeHeader extends StatelessWidget {
       builder: (BuildContext context, HomeHeaderOpacity value, Widget? child) {
         return Opacity(opacity: value.opacity, child: child);
       },
-      child: Container(
-          color: homeHeaderBgColor,
-          padding: EdgeInsets.only(top: getStatusHeight(context), left: 10, right: 10, bottom: 8),
-          height: getStatusHeight(context) + homeHeader1 + homeSearch1 + 8,
-          child: const Column(children: [
-            SizedBox(
-              height: homeHeader1,
-              child: Stack(children: [
-                Align(alignment: Alignment.centerLeft, child: HomeHeadSale()),
-                Align(
-                  alignment: Alignment.center,
-                  child: TextSwitch(
-                    textOn: '首页',
-                    textOff: "小时达",
-                    fontSize: 18,
-                    height: 36,
-                    textHorizontalPadding: 8,
-                    // colorOn: Colors.blue,
-                    // colorOff: Colors.grey,
-                    // textStyle: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
+      child: ValueListenableBuilder<bool>(
+        valueListenable: _isOnNotifier,
+        builder: (context, isOn, child) {
+          return Container(
+            color: isOn ? homeHeaderBgColor1 : homeHeaderBgColor2,
+            padding: EdgeInsets.only(top: getStatusHeight(context), left: 10, right: 10, bottom: isOn ? 8 : 0),
+            child: child,
+          );
+        },
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          SizedBox(
+            height: homeHeader1,
+            child: Stack(children: [
+              const Align(alignment: Alignment.centerLeft, child: HomeHeadSale()),
+              Align(
+                alignment: Alignment.center,
+                child: TextSwitch(
+                  textOn: '首页',
+                  textOff: "小时达",
+                  fontSize: 18,
+                  height: 36,
+                  textHorizontalPadding: 8,
+                  onChanged: (value) {
+                    _isOnNotifier.value = value;
+                    widget?.onChanged?.call(value);
+                  },
+                  // colorOn: Colors.blue,
+                  // colorOff: Colors.grey,
+                  // textStyle: TextStyle(color: Colors.white, fontSize: 20),
                 ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: HomeMessage(
-                    count: 3,
-                  ),
-                )
-              ]),
+              ),
+              const Align(
+                alignment: Alignment.centerRight,
+                child: HomeMessage(
+                  count: 3,
+                ),
+              )
+            ]),
 
-              // padding: EdgeInsets.only(top: getStatusHeight(context) + 20),
-            ),
-            HomeSearch(),
-          ])),
+            // padding: EdgeInsets.only(top: getStatusHeight(context) + 20),
+          ),
+          ValueListenableBuilder<bool>(
+            valueListenable: _isOnNotifier,
+            builder: (_, isOn, child) => Visibility(visible: isOn, child: child!),
+            child: const HomeSearch(),
+          ),
+        ]),
+      ),
     );
+  }
+
+  @override
+  void dispose() {
+    _isOnNotifier.dispose();
+    super.dispose();
   }
 }
 

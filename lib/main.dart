@@ -7,6 +7,7 @@ import 'package:jd_demo/common/constant.dart';
 import 'package:jd_demo/common/platform.dart';
 import 'package:jd_demo/common/ui_utils.dart';
 import 'package:jd_demo/home/refresh1.dart';
+import 'package:jd_demo/home/refresh2.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:jd_demo/home/home_header.dart';
 import 'package:provider/provider.dart';
@@ -50,9 +51,9 @@ class MyApp extends StatelessWidget {
             useMaterial3: true,
           ),
           home: const Scaffold(
-              backgroundColor: white2,
-              body: TestHome(),
-             ),
+            backgroundColor: white2,
+            body: TestHome(),
+          ),
         ),
       ),
     );
@@ -88,9 +89,12 @@ class TestHome extends StatefulWidget {
 }
 
 class _TestHomeState extends State<TestHome> {
+  late PageController _tabController;
+
   @override
   void initState() {
     super.initState();
+    _tabController = PageController(initialPage: 0);
   }
 
   @override
@@ -109,11 +113,26 @@ class _TestHomeState extends State<TestHome> {
                   ));
             },
           ),
-          const HomeRefreshPage1(),
-          const HomeHeader(),
+          PageView(
+            controller: _tabController,
+            physics: const NeverScrollableScrollPhysics(),
+            children: const [
+              HomeRefreshPage1(),
+              HomeRefreshPage2(),
+            ],
+          ),
+          HomeHeader(onChanged: (value) {
+            _tabController.jumpToPage(value ? 0 : 1);
+          }),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 }
 

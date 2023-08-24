@@ -49,7 +49,7 @@ class HomeCategory extends StatelessWidget {
       },
       child: Container(
         height: homeCategoryHeight,
-        color: homeHeaderBgColor,
+        color: homeHeaderBgColor1,
         child: Row(
           children: [
             Expanded(
