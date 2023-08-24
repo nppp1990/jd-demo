@@ -51,7 +51,7 @@ class _HomeSearch2State extends State<HomeSearch2> {
         Consumer<HomeSearch2Opacity>(
           builder: (_, value, child) => Container(
             height: homeSearch2,
-            margin: EdgeInsets.only(right: 50 * value.opacity),
+            margin: EdgeInsets.only(right: 40 * value.opacity),
             padding: const EdgeInsets.symmetric(horizontal: homeSearch2 / 2 - 4),
             decoration: BoxDecoration(
               color: Colors.white,

@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:jd_demo/common/constant.dart';
 import 'package:jd_demo/common/utils/screen_util.dart';
 import 'package:jd_demo/data/jd_icons.dart';
 import 'package:jd_demo/home/home_animation_search.dart';
+import 'package:loop_page_view/loop_page_view.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeRefreshPage2 extends StatefulWidget {
   const HomeRefreshPage2({super.key});
@@ -14,6 +18,8 @@ class HomeRefreshPage2 extends StatefulWidget {
 }
 
 class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
+  static const List<String> categoryList = ['矿泉水', '剃须刀', '口红', '鲜花', '床上用品'];
+
   late RefreshController _refreshController;
   late ScrollController _scrollController;
 
@@ -61,6 +67,34 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
           slivers: [
             const SliverToBoxAdapter(child: HomeLocation()),
             const SliverToBoxAdapter(child: HomeSearch2()),
+            SliverToBoxAdapter(
+              child: Row(
+                  children: categoryList.map((category) {
+                return Container(
+                  margin: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
+                  height: 25,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.white, width: 1),
+                      color: const Color(0xFFE1E1E1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green.withOpacity(0.2),
+                          offset: const Offset(0, 2),
+                          blurRadius: 2,
+                        ),
+                      ]),
+                  child: Center(
+                    child: Text(
+                      category,
+                      style: const TextStyle(color: Colors.green, fontSize: 14),
+                    ),
+                  ),
+                );
+              }).toList()),
+            ),
+            const SliverToBoxAdapter(child: HomeBanner()),
             SliverList.builder(
               itemBuilder: (BuildContext context, int index) {
                 return Container(
@@ -156,10 +190,95 @@ class HomeFavorite extends StatelessWidget {
           children: [
             if (!isFavorite) const Icon(JdDemoIcons.unFavorite, size: 18, color: Colors.black),
             if (!isFavorite) const SizedBox(width: 2),
-            Text(isFavorite ? '已关注' : '关注', style: TextStyle(fontSize: 14, color: isFavorite ? gray2 : Colors.black)),
+            Text(isFavorite ? '已关注' : '关注', style: TextStyle(fontSize: 14, color: isFavorite ? grey2 : Colors.black)),
           ],
         ),
       ),
     );
+  }
+}
+
+class HomeBanner extends StatefulWidget {
+  const HomeBanner({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _HomeBannerState();
+}
+
+class _HomeBannerState extends State<HomeBanner> {
+  static const _bannerList = [
+    'images/gdyg1.jpeg',
+    'images/gdyg2.jpeg',
+    'images/gdyg3.jpg',
+    'images/gdyg4.jpg',
+  ];
+
+  late LoopPageController _loopPageController;
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _loopPageController = LoopPageController();
+    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      _loopPageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 150,
+      child: Stack(children: [
+        LoopPageView.builder(
+          itemCount: _bannerList.length,
+          controller: _loopPageController,
+          itemBuilder: (BuildContext context, int index) => buildBannerItem(context, _bannerList[index]),
+        ),
+        Positioned(
+            bottom: 5,
+            right: 10,
+            child: Container(
+                width: 55,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: SmoothPageIndicator(
+                    controller: _loopPageController.pageController,
+                    count: 4,
+                    effect: const ExpandingDotsEffect(
+                      dotHeight: 5,
+                      dotWidth: 5,
+                      expansionFactor: 3,
+                      spacing: 5,
+                      activeDotColor: Colors.green,
+                      dotColor: Colors.white,
+                    ),
+                  ),
+                )))
+      ]),
+    );
+  }
+
+  Widget buildBannerItem(BuildContext context, String path) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        image: DecorationImage(
+          image: Image.asset(path).image,
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _loopPageController.dispose();
+    _timer.cancel();
+    super.dispose();
   }
 }

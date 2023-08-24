@@ -60,8 +60,8 @@ class HomeCategory extends StatelessWidget {
               spacing: 0,
               children: [
                 SizedBox(width: 6),
-                Icon(JdDemoIcons.category, size: 20, color: gray1),
-                Text('分类', style: TextStyle(color: gray1)),
+                Icon(JdDemoIcons.category, size: 20, color: grey1),
+                Text('分类', style: TextStyle(color: grey1)),
                 SizedBox(width: 10),
               ],
             )
@@ -111,7 +111,7 @@ class _CategoryListState extends State<_CategoryList> with AutomaticKeepAliveCli
               textStyle: TextStyle(
                   fontSize: _selectedIndex == index ? 18 : 16,
                   fontWeight: _selectedIndex == index ? FontWeight.bold : FontWeight.normal),
-              foregroundColor: gray1,
+              foregroundColor: grey1,
               minimumSize: Size.zero,
               padding: const EdgeInsets.symmetric(horizontal: 2)),
           child: Text(widget.dataList[index].name),

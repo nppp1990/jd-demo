@@ -97,7 +97,7 @@ class _HomeGirdCategoryState extends State<HomeGirdCategory> {
               expansionFactor: 3,
               spacing: 5,
               activeDotColor: Colors.red,
-              dotColor: gray4,
+              dotColor: grey4,
             ),
           ),
         ),
@@ -134,7 +134,7 @@ class _HomeGirdCategoryState extends State<HomeGirdCategory> {
             // const SizedBox(height: 5),
             Text(
               info.title,
-              style: const TextStyle(color: gray3),
+              style: const TextStyle(color: grey3),
             ),
           ],
         ),

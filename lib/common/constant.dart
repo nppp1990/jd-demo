@@ -12,10 +12,10 @@ const double homeSearch2 = 40;
 
 const Color homeHeaderBgColor1 = Color(0xFFEEEEEE);
 const Color homeHeaderBgColor2 = Color(0xFFBDE9C6);
-const Color gray1 = Color(0xFF5C5C5C);
-const Color gray2 = Color(0xFF989898);
-const Color gray3 = Color(0xFF8d8d8d);
-const Color gray4 = Color(0xFFDFDFDF);
+const Color grey1 = Color(0xFF5C5C5C);
+const Color grey2 = Color(0xFF989898);
+const Color grey3 = Color(0xFF8d8d8d);
+const Color grey4 = Color(0xFFDFDFDF);
 
 const Color beautyBgColor = Color(0xFFFEDC32);
 
