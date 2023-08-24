@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:jd_demo/common/constant.dart';
 import 'package:jd_demo/common/utils/screen_util.dart';
 import 'package:jd_demo/home/home_category.dart';
@@ -19,6 +20,8 @@ class _HomeRefreshPage1State extends State<HomeRefreshPage1> {
   late ScrollController _scrollController;
 
   double? _twiceTriggerDistance;
+  // 瀑布流测试数据count
+  late ValueNotifier<int> _gridCountNotifier;
 
   @override
   void initState() {
@@ -56,117 +59,134 @@ class _HomeRefreshPage1State extends State<HomeRefreshPage1> {
           homeHeaderOpacity.changeOpacity(1 + pixels / _twiceTriggerDistance!);
         }
       });
+    _gridCountNotifier = ValueNotifier(12);
   }
 
   @override
   void dispose() {
     _refreshController.dispose();
     _scrollController.dispose();
+    _gridCountNotifier.dispose();
     super.dispose();
   }
 
   Widget buildContent(BuildContext context) {
-    return ListView.builder(
-        itemCount: 20,
-        itemBuilder: (context, index) {
-          switch (index) {
-            case 0:
-              return const HomeCategory();
-            case 1:
-              return Container(
-                padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
-                height: 160,
-                color: beautyBgColor,
-                child: const Image(
-                    image: AssetImage('images/beauty5.jpeg'), fit: BoxFit.fill, alignment: Alignment.center),
-                // child: Container(
-                //     decoration: BoxDecoration(
-                //       image: const DecorationImage(
-                //           image: AssetImage('images/beauty5.jpeg'), fit: BoxFit.fill, alignment: Alignment.center),
-                //       borderRadius: BorderRadius.circular(10),
-                //     )),
-              );
-            case 2:
-              return const HomeGirdCategory();
-            case 3:
-              return Card(
-                margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                shadowColor: Colors.black,
-                color: white2,
-                elevation: 4,
-                child: Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white, width: 1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      '懒得写UI了，就这样吧',
-                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                    ),
-                  ),
+    return CustomScrollView(
+      slivers: [
+        const SliverToBoxAdapter(child: HomeCategory()),
+        SliverToBoxAdapter(
+            child: Container(
+          padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+          height: 160,
+          color: beautyBgColor,
+          child: const Image(image: AssetImage('images/beauty5.jpeg'), fit: BoxFit.fill, alignment: Alignment.center),
+        )),
+        const SliverToBoxAdapter(child: HomeGirdCategory()),
+        SliverToBoxAdapter(
+          child: Card(
+            margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+            shadowColor: Colors.black,
+            color: white2,
+            elevation: 4,
+            child: Container(
+              height: 100,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white, width: 1),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const Center(
+                child: Text(
+                  '懒得写UI了，就这样吧',
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                 ),
-              );
-            case 4:
-              return Row(
-                children: [
-                  Expanded(
-                      child: Card(
-                    margin: const EdgeInsets.only(left: 10),
-                    shadowColor: Colors.black,
-                    color: white2,
-                    elevation: 4,
-                    child: Container(
-                      height: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          '懒得写UI了，就这样吧',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  )),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                      child: Card(
-                    margin: const EdgeInsets.only(right: 10),
-                    shadowColor: Colors.black,
-                    color: white2,
-                    elevation: 4,
-                    child: Container(
-                      height: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          '懒得写UI了，就这样吧',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  )),
-                ],
-              );
-            default:
-              return Container(
+              ),
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+            child: Row(
+          children: [
+            Expanded(
+                child: Card(
+              margin: const EdgeInsets.only(left: 10),
+              shadowColor: Colors.black,
+              color: white2,
+              elevation: 4,
+              child: Container(
                 height: 100,
-                color: Colors.primaries[index % Colors.primaries.length],
-                child: Center(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Center(
                   child: Text(
-                    '$index',
-                    style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                    '懒得写UI了，就这样吧',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ),
-              );
-          }
-        });
+              ),
+            )),
+            const SizedBox(
+              width: 10,
+            ),
+            Expanded(
+                child: Card(
+              margin: const EdgeInsets.only(right: 10),
+              shadowColor: Colors.black,
+              color: white2,
+              elevation: 4,
+              child: Container(
+                height: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Center(
+                  child: Text(
+                    '懒得写UI了，就这样吧',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            )),
+          ],
+        )),
+        ValueListenableBuilder<int>(
+          valueListenable: _gridCountNotifier,
+          builder: (_, count, child) {
+            return SliverPadding(
+                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+                  sliver: SliverGrid(
+                    gridDelegate: SliverQuiltedGridDelegate(
+                      crossAxisCount: 4,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                      repeatPattern: QuiltedGridRepeatPattern.mirrored,
+                      pattern: [
+                        const QuiltedGridTile(3, 2),
+                        const QuiltedGridTile(2, 2),
+                      ],
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      childCount: count,
+                      (context, index) => Container(
+                          // height: 50 * (index % 3 + 3).toDouble(),
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.white, width: 1),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${index + 1}',
+                              style: const TextStyle(color: Colors.white, fontSize: 30),
+                            ),
+                          )),
+                    ),
+                  ),
+                );
+          },
+        )
+      ],
+    );
   }
 
   @override
@@ -182,7 +202,7 @@ class _HomeRefreshPage1State extends State<HomeRefreshPage1> {
       child: SmartRefresher(
         enableTwoLevel: true,
         enablePullDown: true,
-        enablePullUp: false,
+        enablePullUp: true,
         controller: _refreshController,
         scrollController: _scrollController,
         header: TwoLevelHeader(
@@ -211,13 +231,14 @@ class _HomeRefreshPage1State extends State<HomeRefreshPage1> {
         onRefresh: () async {
           print('-----onRefresh');
           await Future.delayed(const Duration(milliseconds: 1000));
+          _gridCountNotifier.value = 12;
           _refreshController.refreshCompleted();
         },
-        // onLoading: () async {
-        //   print('-----onLoading');
-        //   // await Future.delayed(const Duration(milliseconds: 2000));
-        //   _refreshController.loadComplete();
-        // },
+        onLoading: () async {
+          await Future.delayed(const Duration(milliseconds: 1000));
+          _gridCountNotifier.value = _gridCountNotifier.value + 12;
+          _refreshController.loadComplete();
+        },
       ),
     );
   }
