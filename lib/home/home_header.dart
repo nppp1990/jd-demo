@@ -6,6 +6,7 @@ import 'package:jd_demo/common/text_switch.dart';
 import 'package:jd_demo/common/utils/screen_util.dart';
 import 'package:jd_demo/data/jd_icons.dart';
 import 'package:jd_demo/demo/demo_list.dart';
+import 'package:jd_demo/home/home_auto_changed_text.dart';
 import 'package:jd_demo/main.dart';
 import 'package:loop_page_view/loop_page_view.dart';
 import 'package:provider/provider.dart';
@@ -78,7 +79,7 @@ class _HomeHeaderState extends State<HomeHeader> {
           ValueListenableBuilder<bool>(
             valueListenable: _isOnNotifier,
             builder: (_, isOn, child) => Visibility(visible: isOn, child: child!),
-            child: const HomeSearch(),
+            child: const HomeSearch1(),
           ),
         ]),
       ),
@@ -92,8 +93,8 @@ class _HomeHeaderState extends State<HomeHeader> {
   }
 }
 
-class HomeSearch extends StatelessWidget {
-  const HomeSearch({super.key});
+class HomeSearch1 extends StatelessWidget {
+  const HomeSearch1({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +118,7 @@ class HomeSearch extends StatelessWidget {
           ),
           Expanded(
               flex: 1,
-              child: _AutoChangedText(
+              child: AutoChangedText(
                 data: ['dior口红礼盒', '修甲套装', '王国之泪', 'Switch', '七夕节好礼'],
               )),
           Icon(
@@ -144,39 +145,6 @@ class HomeSearch extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _AutoChangedText extends StatefulWidget {
-  final List<String> data;
-
-  const _AutoChangedText({super.key, required this.data});
-
-  @override
-  State<_AutoChangedText> createState() => _AutoChangedTextState();
-}
-
-class _AutoChangedTextState extends State<_AutoChangedText> {
-  late Timer _timer;
-  int _index = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      setState(() {
-        _index++;
-        _index = _index % widget.data.length;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      widget.data[_index],
-      style: const TextStyle(fontSize: 18, color: Colors.grey),
     );
   }
 }

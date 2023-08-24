@@ -6,6 +6,7 @@ import 'package:jd_demo/api/request_manager.dart';
 import 'package:jd_demo/common/constant.dart';
 import 'package:jd_demo/common/platform.dart';
 import 'package:jd_demo/common/ui_utils.dart';
+import 'package:jd_demo/home/home_animation_search.dart';
 import 'package:jd_demo/home/refresh1.dart';
 import 'package:jd_demo/home/refresh2.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -100,7 +101,10 @@ class _TestHomeState extends State<TestHome> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider<HomeHeaderOpacity>(create: (ctx) => HomeHeaderOpacity())],
+      providers: [
+        ChangeNotifierProvider<HomeHeaderOpacity>(create: (ctx) => HomeHeaderOpacity()),
+        ChangeNotifierProvider<HomeSearch2Opacity>(create: (ctx) => HomeSearch2Opacity())
+      ],
       child: Stack(
         children: [
           Selector<HomeHeaderOpacity, bool>(

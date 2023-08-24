@@ -7,6 +7,9 @@ const double homeHeader1 = 48;
 const double homeSearch1 = 40;
 const double homeCategoryHeight = 40;
 const double homeBackBottomViewHeight = 180;
+const double homeLocationHeight = 40;
+const double homeSearch2 = 40;
+
 const Color homeHeaderBgColor1 = Color(0xFFEEEEEE);
 const Color homeHeaderBgColor2 = Color(0xFFBDE9C6);
 const Color gray1 = Color(0xFF5C5C5C);
