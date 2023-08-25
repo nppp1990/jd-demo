@@ -24,6 +24,9 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
   late RefreshController _refreshController;
   late ScrollController _scrollController;
 
+  // 列表页加数据count
+  late ValueNotifier<int> _listCountNotifier;
+
   @override
   void initState() {
     var homeSearch2Opacity = context.read<HomeSearch2Opacity>();
@@ -43,6 +46,7 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
         }
         print('scrollController: ${_scrollController.offset}---statue: ${_refreshController.headerStatus}');
       });
+    _listCountNotifier = ValueNotifier(10);
   }
 
   @override
@@ -58,10 +62,12 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
         header: const ClassicHeader(),
         onRefresh: () async {
           await Future.delayed(const Duration(seconds: 2));
+          _listCountNotifier.value = 10;
           _refreshController.refreshCompleted();
         },
         onLoading: () async {
           await Future.delayed(const Duration(seconds: 2));
+          _listCountNotifier.value = _listCountNotifier.value + 10;
           _refreshController.loadComplete();
         },
         child: CustomScrollView(
@@ -104,18 +110,41 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
             const SliverToBoxAdapter(child: HomeGridCategoryLayout2()),
             SliverPersistentHeader(
                 pinned: true, delegate: _TabBarDelegate(child: const HomeCategoryTabBar(), height: 50)),
-            SliverList.builder(
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  height: 100,
-                  color: Colors.primaries[index % Colors.primaries.length],
-                  child: Center(
-                    child: Text('$index'),
-                  ),
-                );
-              },
-              itemCount: 20,
-            ),
+            ValueListenableBuilder<int>(
+                valueListenable: _listCountNotifier,
+                builder: (context, value, _) => SliverList.builder(
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index % 4 == 3) {
+                          return Container(
+                            height: 100,
+                            margin: const EdgeInsets.only(bottom: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.yellow[100],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text('这是广告：$index'),
+                            ),
+                          );
+                        } else {
+                          return Container(
+                            height: 200,
+                            margin: const EdgeInsets.only(bottom: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text(
+                                '普通list item：$index',
+                                style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      itemCount: value,
+                    )),
           ],
         ),
       ),
