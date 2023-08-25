@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:jd_demo/common/constant.dart';
 import 'package:jd_demo/common/shiny_text.dart';
@@ -124,7 +126,9 @@ class _HomeGirdCategoryState extends State<HomeGirdCategory> {
         Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 5,),
+            const SizedBox(
+              height: 5,
+            ),
             Image.asset(
               info.imgUrl,
               width: 45,
@@ -157,5 +161,198 @@ class _HomeGirdCategoryState extends State<HomeGirdCategory> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+}
+
+class HomeGridCategory2 extends StatefulWidget {
+  final double width;
+  final List<GirdCateGoryInfo> data;
+
+  const HomeGridCategory2({super.key, required this.width, required this.data});
+
+  @override
+  State<HomeGridCategory2> createState() => _HomeGridCategory2State();
+}
+
+class _HomeGridCategory2State extends State<HomeGridCategory2> {
+  static const double defaultImgSize = 45;
+  static const double itemHeight = 80;
+  late PageController _pageController;
+  late int _pageCount;
+  late ValueNotifier<double> _heightRatioNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageCount = 0;
+    int size = 0;
+    while (size < widget.data.length) {
+      _pageCount++;
+      size += 5 * _pageCount;
+    }
+    _pageController = PageController()
+      ..addListener(() {
+        _heightRatioNotifier.value = 1 + _pageController.page!;
+      });
+    _heightRatioNotifier = ValueNotifier(1.0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double childAspectRatio = widget.width / (5 * itemHeight);
+    return ValueListenableBuilder<double>(
+      valueListenable: _heightRatioNotifier,
+      builder: (BuildContext context, value, Widget? child) => SizedBox(
+        height: itemHeight * value,
+        child: child,
+      ),
+      child: Stack(
+        children: [
+          PageView.builder(
+              controller: _pageController,
+              itemCount: _pageCount,
+              itemBuilder: (context, index) {
+                // f(0)=0 f(n+1)=f(n)+ 5*n
+                // f(n) = 5*n*(n+1)/2
+                int start = 5 * index * (index + 1) ~/ 2;
+                int end = start + (index + 1) * 5;
+                end = min(end, widget.data.length);
+                return _buildGrid(childAspectRatio, widget.data.sublist(start, end));
+              }),
+          Positioned(
+            bottom: 2,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: SmoothPageIndicator(
+                controller: _pageController,
+                count: _pageCount,
+                effect: const ExpandingDotsEffect(
+                  dotHeight: 5,
+                  dotWidth: 5,
+                  expansionFactor: 3,
+                  spacing: 5,
+                  activeDotColor: Colors.red,
+                  dotColor: grey4,
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  Widget _buildGrid(double childAspectRatio, List<GirdCateGoryInfo> list) {
+    return GridView.count(
+      padding: EdgeInsets.zero,
+      childAspectRatio: childAspectRatio,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisSpacing: 0,
+      mainAxisSpacing: 0,
+      crossAxisCount: 5,
+      children: list.map((e) => _buildItem(e, defaultImgSize)).toList(),
+    );
+  }
+
+  Widget _buildItem(GirdCateGoryInfo info, double imgSize) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(
+          height: 5,
+        ),
+        CircleAvatar(
+          radius: imgSize / 2,
+          backgroundImage: AssetImage(
+            info.imgUrl,
+          ),
+        ),
+        SizedBox(
+          height: 20,
+          child: Center(
+            child: Text(
+              info.title,
+              style: const TextStyle(color: grey3, fontSize: 13),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class HomeGridCategoryLayout2 extends StatelessWidget {
+  const HomeGridCategoryLayout2({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+      ),
+      child: Column(
+        children: [
+          _buildHeader('1小时送到家', '生鲜百货，随叫随到'),
+          HomeGridCategory2(width: getScreenWidth(context) - 20, data: [
+            GirdCateGoryInfo('images/avatar1.jpeg', '超市便利'),
+            GirdCateGoryInfo('images/avatar1.jpeg', '手机'),
+            GirdCateGoryInfo('images/avatar1.jpeg', '买菜'),
+            GirdCateGoryInfo('images/avatar1.jpeg', '时尚百货'),
+            GirdCateGoryInfo('images/avatar1.jpeg', '买药'),
+            GirdCateGoryInfo('images/avatar2.jpeg', '蛋糕甜点'),
+            GirdCateGoryInfo('images/avatar2.jpeg', '电脑数码'),
+            GirdCateGoryInfo('images/avatar2.jpeg', '母婴'),
+            GirdCateGoryInfo('images/avatar2.jpeg', '酒水'),
+            GirdCateGoryInfo('images/avatar2.jpeg', '水果'),
+            GirdCateGoryInfo('images/avatar2.jpeg', '鲜花绿植'),
+            GirdCateGoryInfo('images/avatar2.jpeg', '宠物生活'),
+          ]),
+          _buildHeader('同城服务', '吃喝玩乐，应有尽有'),
+          HomeGridCategory2(width: getScreenWidth(context) - 20, data: [
+            GirdCateGoryInfo('images/avatar2.jpeg', '美食'),
+            GirdCateGoryInfo('images/avatar2.jpeg', '家政服务'),
+            GirdCateGoryInfo('images/avatar2.jpeg', '生活缴费'),
+            GirdCateGoryInfo('images/avatar2.jpeg', '电影演出'),
+            GirdCateGoryInfo('images/avatar2.jpeg', '摄影写真'),
+            GirdCateGoryInfo('images/avatar1.jpeg', '家装定制'),
+            GirdCateGoryInfo('images/avatar1.jpeg', '丽人/美发'),
+            GirdCateGoryInfo('images/avatar1.jpeg', '结婚/婚纱'),
+            GirdCateGoryInfo('images/avatar1.jpeg', '教育培训'),
+            GirdCateGoryInfo('images/avatar1.jpeg', '医疗健康'),
+            GirdCateGoryInfo('images/avatar1.jpeg', '运动健身'),
+            GirdCateGoryInfo('images/avatar1.jpeg', '亲子/幼教'),
+            GirdCateGoryInfo('images/avatar1.jpeg', '家居维修'),
+          ]),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(String title, String subTitle) {
+    return SizedBox(
+      height: 30,
+      child: Row(children: [
+        const SizedBox(
+          width: 10,
+        ),
+        Text(title, style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
+        const SizedBox(
+          width: 6,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 2),
+          child: Text(subTitle, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+        ),
+      ]),
+    );
   }
 }

@@ -5,6 +5,7 @@ import 'package:jd_demo/common/constant.dart';
 import 'package:jd_demo/common/utils/screen_util.dart';
 import 'package:jd_demo/data/jd_icons.dart';
 import 'package:jd_demo/home/home_animation_search.dart';
+import 'package:jd_demo/home/home_grid_category.dart';
 import 'package:loop_page_view/loop_page_view.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -95,6 +96,12 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
               }).toList()),
             ),
             const SliverToBoxAdapter(child: HomeBanner()),
+            const SliverToBoxAdapter(
+              child: SizedBox(
+                height: 10,
+              ),
+            ),
+            const SliverToBoxAdapter(child: HomeGridCategoryLayout2()),
             SliverList.builder(
               itemBuilder: (BuildContext context, int index) {
                 return Container(

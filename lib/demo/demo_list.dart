@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jd_demo/demo/demo_shiny.dart';
 import 'package:jd_demo/demo/demo_smooth_page_indicator.dart';
 import 'package:jd_demo/demo/demo_staggered_grid.dart';
+import 'package:jd_demo/demo/demo_two_level_page.dart';
 
 
 class DemoList extends StatelessWidget {
@@ -37,6 +38,15 @@ class DemoList extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const StaggerGrid()),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('two level page view'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TwoLevelPageDemo()),
                 );
               },
             ),
