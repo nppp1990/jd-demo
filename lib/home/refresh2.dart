@@ -48,7 +48,7 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: homeHeaderBgColor2,
+      color: homeBgColor2,
       padding: EdgeInsets.only(top: getStatusHeight(context) + homeHeader1, left: 10, right: 10),
       child: SmartRefresher(
         enablePullDown: true,
@@ -102,6 +102,8 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
               ),
             ),
             const SliverToBoxAdapter(child: HomeGridCategoryLayout2()),
+            SliverPersistentHeader(
+                pinned: true, delegate: _TabBarDelegate(child: const HomeCategoryTabBar(), height: 50)),
             SliverList.builder(
               itemBuilder: (BuildContext context, int index) {
                 return Container(
@@ -118,6 +120,29 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
         ),
       ),
     );
+  }
+}
+
+class _TabBarDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+  final double height;
+
+  _TabBarDelegate({required this.child, required this.height});
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  double get minExtent => height;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return false;
   }
 }
 
@@ -286,6 +311,88 @@ class _HomeBannerState extends State<HomeBanner> {
   void dispose() {
     _loopPageController.dispose();
     _timer.cancel();
+    super.dispose();
+  }
+}
+
+class HomeCategoryTabBar extends StatefulWidget {
+  const HomeCategoryTabBar({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _HomeCategoryTabBarState();
+}
+
+class _HomeCategoryTabBarState extends State<HomeCategoryTabBar> with SingleTickerProviderStateMixin {
+  static const _categoryList = [
+    '附近门店',
+    '逛超市',
+    '家电',
+    '电脑',
+    '生活',
+    '服饰',
+    '吃喝玩乐',
+    '食品',
+    '母婴',
+    '图书',
+    '运动',
+    '汽车',
+    '服务',
+    '拍卖',
+    '房产',
+  ];
+
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: _categoryList.length, vsync: this);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var themeData = Theme.of(context);
+    return Container(
+      color: homeBgColor2,
+      height: 50,
+      child: Center(
+        child: Theme(
+          data: themeData.copyWith(
+            colorScheme: themeData.colorScheme.copyWith(
+              surfaceVariant: Colors.transparent,
+            ),
+            indicatorColor: Colors.transparent,
+          ),
+          child: TabBar(
+              isScrollable: true,
+              controller: _tabController,
+              labelPadding: EdgeInsets.zero,
+              labelColor: Colors.green,
+              indicatorColor: Colors.transparent,
+              // indicatorWeight: double.minPositive,
+              tabs: _categoryList
+                  .map((e) => Container(
+                        height: 30,
+                        margin: const EdgeInsets.only(right: 10),
+                        // width: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Center(
+                          child: Text(e),
+                        ),
+                      ))
+                  .toList()),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
     super.dispose();
   }
 }
