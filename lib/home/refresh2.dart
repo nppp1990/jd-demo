@@ -19,7 +19,6 @@ class HomeRefreshPage2 extends StatefulWidget {
 }
 
 class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
-  static const List<String> categoryList = ['矿泉水', '剃须刀', '口红', '鲜花', '床上用品'];
 
   late RefreshController _refreshController;
   late ScrollController _scrollController;
@@ -53,7 +52,7 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
   Widget build(BuildContext context) {
     return Container(
       color: homeBgColor2,
-      padding: EdgeInsets.only(top: getStatusHeight(context) + homeHeader1, left: 10, right: 10),
+      padding: EdgeInsets.only(top: getStatusHeight(context) + homeHeader1),
       child: SmartRefresher(
         enablePullDown: true,
         enablePullUp: true,
@@ -73,13 +72,86 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
         child: CustomScrollView(
           slivers: [
             const SliverToBoxAdapter(child: HomeLocation()),
-            const SliverToBoxAdapter(child: HomeSearch2()),
-            SliverToBoxAdapter(
-              child: Row(
-                  children: categoryList.map((category) {
+            SliverPersistentHeader(floating: true,
+                delegate: _HomeHeaderDelegate(
+                    height: homeSearch2 + homeCategoryHeight3 + 16, child: const HomeFloatingHeader())),
+            const SliverToBoxAdapter(child: HomeBanner()),
+            const SliverToBoxAdapter(
+              child: SizedBox(
+                height: 10,
+              ),
+            ),
+            const SliverToBoxAdapter(child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: HomeGridCategoryLayout2(),
+            )),
+            SliverPersistentHeader(
+                pinned: true,
+                // floating: true,
+                delegate: _HomeHeaderDelegate(child: const HomeCategoryTabBar(), height: homeCategoryHeight2)),
+            ValueListenableBuilder<int>(
+                valueListenable: _listCountNotifier,
+                builder: (context, value, _) =>
+                    SliverList.builder(
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index % 4 == 3) {
+                          return Container(
+                            height: 100,
+                            margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.yellow[100],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text('这是广告：$index'),
+                            ),
+                          );
+                        } else {
+                          return Container(
+                            height: 200,
+                            margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text(
+                                '普通list item：$index',
+                                style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      itemCount: value,
+                    )),
+          ],
+        ),)
+      ,
+    );
+  }
+}
+
+class HomeFloatingHeader extends StatelessWidget {
+  static const List<String> categoryList = ['矿泉水', '剃须刀', '口红', '鲜花', '床上用品'];
+
+  const HomeFloatingHeader({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: homeHeaderBgColor2,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+        children: [
+          // homeSearch2
+          const HomeSearch2(),
+          // homeCategoryHeight3 + 16
+          Row(
+              children: categoryList.map((category) {
                 return Container(
                   margin: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
-                  height: 25,
+                  height: homeCategoryHeight3,
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
@@ -100,63 +172,17 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
                   ),
                 );
               }).toList()),
-            ),
-            const SliverToBoxAdapter(child: HomeBanner()),
-            const SliverToBoxAdapter(
-              child: SizedBox(
-                height: 10,
-              ),
-            ),
-            const SliverToBoxAdapter(child: HomeGridCategoryLayout2()),
-            SliverPersistentHeader(
-                pinned: true, delegate: _TabBarDelegate(child: const HomeCategoryTabBar(), height: 50)),
-            ValueListenableBuilder<int>(
-                valueListenable: _listCountNotifier,
-                builder: (context, value, _) => SliverList.builder(
-                      itemBuilder: (BuildContext context, int index) {
-                        if (index % 4 == 3) {
-                          return Container(
-                            height: 100,
-                            margin: const EdgeInsets.only(bottom: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.yellow[100],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Center(
-                              child: Text('这是广告：$index'),
-                            ),
-                          );
-                        } else {
-                          return Container(
-                            height: 200,
-                            margin: const EdgeInsets.only(bottom: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Center(
-                              child: Text(
-                                '普通list item：$index',
-                                style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                      itemCount: value,
-                    )),
-          ],
-        ),
+        ],
       ),
     );
   }
 }
 
-class _TabBarDelegate extends SliverPersistentHeaderDelegate {
+class _HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
   final double height;
 
-  _TabBarDelegate({required this.child, required this.height});
+  _HomeHeaderDelegate({required this.child, required this.height});
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
@@ -193,8 +219,10 @@ class _HomeLocationState extends State<HomeLocation> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      color: homeHeaderBgColor2,
       height: homeLocationHeight,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         children: [
           const Icon(JdDemoIcons.location, size: 18, color: Colors.white),
@@ -251,7 +279,8 @@ class HomeFavorite extends StatelessWidget {
           children: [
             if (!isFavorite) const Icon(JdDemoIcons.unFavorite, size: 18, color: Colors.black),
             if (!isFavorite) const SizedBox(width: 2),
-            Text(isFavorite ? '已关注' : '关注', style: TextStyle(fontSize: 14, color: isFavorite ? grey2 : Colors.black)),
+            Text(isFavorite ? '已关注' : '关注',
+                style: TextStyle(fontSize: 14, color: isFavorite ? grey2 : Colors.black)),
           ],
         ),
       ),
@@ -288,7 +317,8 @@ class _HomeBannerState extends State<HomeBanner> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       height: 150,
       child: Stack(children: [
         LoopPageView.builder(
@@ -329,7 +359,9 @@ class _HomeBannerState extends State<HomeBanner> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         image: DecorationImage(
-          image: Image.asset(path).image,
+          image: Image
+              .asset(path)
+              .image,
           fit: BoxFit.cover,
         ),
       ),
@@ -383,7 +415,8 @@ class _HomeCategoryTabBarState extends State<HomeCategoryTabBar> with SingleTick
     var themeData = Theme.of(context);
     return Container(
       color: homeBgColor2,
-      height: 50,
+      height: homeCategoryHeight2,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Center(
         child: Theme(
           data: themeData.copyWith(
@@ -400,19 +433,20 @@ class _HomeCategoryTabBarState extends State<HomeCategoryTabBar> with SingleTick
               indicatorColor: Colors.transparent,
               // indicatorWeight: double.minPositive,
               tabs: _categoryList
-                  .map((e) => Container(
-                        height: 30,
-                        margin: const EdgeInsets.only(right: 10),
-                        // width: 80,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Center(
-                          child: Text(e),
-                        ),
-                      ))
+                  .map((e) =>
+                  Container(
+                    height: 30,
+                    margin: const EdgeInsets.only(right: 10),
+                    // width: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Center(
+                      child: Text(e),
+                    ),
+                  ))
                   .toList()),
         ),
       ),
