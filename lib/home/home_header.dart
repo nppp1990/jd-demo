@@ -225,9 +225,10 @@ class _AutoLoopTextPagerState extends State<_AutoLoopTextPager> {
   @override
   Widget build(BuildContext context) {
     return LoopPageView.builder(
-      scrollDirection: Axis.vertical,
-      controller: _pageController,
-      itemCount: widget.data.length,
+      scrollDirection: Axis.vertical, // 滚动方向
+      controller: _pageController, // 控制器
+      itemCount: widget.data.length, // 个数
+      physics: const NeverScrollableScrollPhysics(), // 禁止滚动
       itemBuilder: (context, index) {
         return SizedBox(
           height: widget.height,
@@ -236,7 +237,7 @@ class _AutoLoopTextPagerState extends State<_AutoLoopTextPager> {
                 style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
           ),
         );
-      },
+      }, // 构建item
     );
   }
 }

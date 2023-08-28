@@ -138,9 +138,9 @@ class _TextSwitchState extends State<TextSwitch> with SingleTickerProviderStateM
         child: Stack(
           children: [
             Transform.translate(
-              offset: _offsetAnimation.value,
+              offset: _offsetAnimation.value, // 从左到右位移的动画
               child: Container(
-                width: _widthAnimation.value,
+                width: _widthAnimation.value, // 宽度的动画
                 height: _height,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(_borderRadius),
