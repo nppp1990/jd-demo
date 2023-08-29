@@ -19,7 +19,6 @@ class HomeRefreshPage2 extends StatefulWidget {
 }
 
 class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
-
   late RefreshController _refreshController;
   late ScrollController _scrollController;
 
@@ -72,7 +71,8 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
         child: CustomScrollView(
           slivers: [
             const SliverToBoxAdapter(child: HomeLocation()),
-            SliverPersistentHeader(floating: true,
+            SliverPersistentHeader(
+                floating: true,
                 delegate: _HomeHeaderDelegate(
                     height: homeSearch2 + homeCategoryHeight3 + 16, child: const HomeFloatingHeader())),
             const SliverToBoxAdapter(child: HomeBanner()),
@@ -81,7 +81,8 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
                 height: 10,
               ),
             ),
-            const SliverToBoxAdapter(child: Padding(
+            const SliverToBoxAdapter(
+                child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10),
               child: HomeGridCategoryLayout2(),
             )),
@@ -91,8 +92,7 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
                 delegate: _HomeHeaderDelegate(child: const HomeCategoryTabBar(), height: homeCategoryHeight2)),
             ValueListenableBuilder<int>(
                 valueListenable: _listCountNotifier,
-                builder: (context, value, _) =>
-                    SliverList.builder(
+                builder: (context, value, _) => SliverList.builder(
                       itemBuilder: (BuildContext context, int index) {
                         if (index % 4 == 3) {
                           return Container(
@@ -126,8 +126,8 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
                       itemCount: value,
                     )),
           ],
-        ),)
-      ,
+        ),
+      ),
     );
   }
 }
@@ -149,29 +149,29 @@ class HomeFloatingHeader extends StatelessWidget {
           // homeCategoryHeight3 + 16
           Row(
               children: categoryList.map((category) {
-                return Container(
-                  margin: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
-                  height: homeCategoryHeight3,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Colors.white, width: 1),
-                      color: const Color(0xFFE1E1E1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.green.withOpacity(0.2),
-                          offset: const Offset(0, 2),
-                          blurRadius: 2,
-                        ),
-                      ]),
-                  child: Center(
-                    child: Text(
-                      category,
-                      style: const TextStyle(color: Colors.green, fontSize: 14),
+            return Container(
+              margin: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
+              height: homeCategoryHeight3,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: Colors.white, width: 1),
+                  color: const Color(0xFFE1E1E1),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.green.withOpacity(0.2),
+                      offset: const Offset(0, 2),
+                      blurRadius: 2,
                     ),
-                  ),
-                );
-              }).toList()),
+                  ]),
+              child: Center(
+                child: Text(
+                  category,
+                  style: const TextStyle(color: Colors.green, fontSize: 14),
+                ),
+              ),
+            );
+          }).toList()),
         ],
       ),
     );
@@ -279,8 +279,7 @@ class HomeFavorite extends StatelessWidget {
           children: [
             if (!isFavorite) const Icon(JdDemoIcons.unFavorite, size: 18, color: Colors.black),
             if (!isFavorite) const SizedBox(width: 2),
-            Text(isFavorite ? '已关注' : '关注',
-                style: TextStyle(fontSize: 14, color: isFavorite ? grey2 : Colors.black)),
+            Text(isFavorite ? '已关注' : '关注', style: TextStyle(fontSize: 14, color: isFavorite ? grey2 : Colors.black)),
           ],
         ),
       ),
@@ -359,9 +358,7 @@ class _HomeBannerState extends State<HomeBanner> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         image: DecorationImage(
-          image: Image
-              .asset(path)
-              .image,
+          image: Image.asset(path).image,
           fit: BoxFit.cover,
         ),
       ),
@@ -403,11 +400,13 @@ class _HomeCategoryTabBarState extends State<HomeCategoryTabBar> with SingleTick
   ];
 
   late TabController _tabController;
+  late int _selectedIndex;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _categoryList.length, vsync: this);
+    _selectedIndex = 0;
   }
 
   @override
@@ -426,28 +425,32 @@ class _HomeCategoryTabBarState extends State<HomeCategoryTabBar> with SingleTick
             indicatorColor: Colors.transparent,
           ),
           child: TabBar(
+              onTap: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
               isScrollable: true,
               controller: _tabController,
               labelPadding: EdgeInsets.zero,
-              labelColor: Colors.green,
               indicatorColor: Colors.transparent,
-              // indicatorWeight: double.minPositive,
-              tabs: _categoryList
-                  .map((e) =>
-                  Container(
-                    height: 30,
-                    margin: const EdgeInsets.only(right: 10),
-                    // width: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Center(
-                      child: Text(e),
-                    ),
-                  ))
-                  .toList()),
+              tabs: _categoryList.asMap().entries.map((e) {
+                var index = e.key;
+                var value = e.value;
+                return Container(
+                  height: 30,
+                  margin: const EdgeInsets.only(right: 10),
+                  decoration: BoxDecoration(
+                    color: _selectedIndex == index ? Colors.green[100] : Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: _selectedIndex == index ? Border.all(color: Colors.green, width: 1) : null,
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Center(
+                    child: Text(value),
+                  ),
+                );
+              }).toList()),
         ),
       ),
     );
