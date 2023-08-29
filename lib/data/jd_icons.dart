@@ -17,4 +17,5 @@ class JdDemoIcons {
   static const IconData favorite = IconData(0xe601, fontFamily: 'jd-icons');
   static const IconData unFavorite = IconData(0xe602, fontFamily: 'jd-icons');
   static const IconData orderList = IconData(0xe603, fontFamily: 'jd-icons');
+  static const IconData rocket = IconData(0xe633, fontFamily: 'jd-icons');
 }
