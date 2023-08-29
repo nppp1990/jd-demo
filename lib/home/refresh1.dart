@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:jd_demo/common/constant.dart';
@@ -20,6 +22,7 @@ class _HomeRefreshPage1State extends State<HomeRefreshPage1> {
   late ScrollController _scrollController;
 
   double? _twiceTriggerDistance;
+
   // 瀑布流测试数据count
   late ValueNotifier<int> _gridCountNotifier;
 
@@ -70,7 +73,70 @@ class _HomeRefreshPage1State extends State<HomeRefreshPage1> {
     super.dispose();
   }
 
-  Widget buildContent(BuildContext context) {
+  Widget _buildContent(BuildContext context) {
+    // 高度随机的grid瀑布流、性能较差
+    Widget buildRandomGrid(int count) {
+      return SliverToBoxAdapter(
+        child: StaggeredGrid.count(
+          crossAxisCount: 2,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          children: List.generate(count, (index) {
+            final randomHeight = Random().nextInt(100) + 200;
+            return Container(
+                height: randomHeight.toDouble(),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.white, width: 1),
+                ),
+                child: Center(
+                  child: Text(
+                    '$index',
+                    style: const TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ));
+          }),
+        ),
+      );
+    }
+
+    // 高度固定的grid瀑布流、性能较好
+    Widget buildSliverGrid(int count) {
+      return SliverGrid(
+        gridDelegate: SliverQuiltedGridDelegate(
+          crossAxisCount: 4,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          repeatPattern: QuiltedGridRepeatPattern.mirrored,
+          pattern: [
+            const QuiltedGridTile(3, 2),
+            const QuiltedGridTile(2, 2),
+            // const QuiltedGridTile(3, 2),
+            // const QuiltedGridTile(3, 2),
+            // const QuiltedGridTile(2, 2),
+            // const QuiltedGridTile(3, 2),
+            // const QuiltedGridTile(2, 2),
+          ],
+        ),
+        delegate: SliverChildBuilderDelegate(
+          childCount: count,
+          (context, index) => Container(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.white, width: 1),
+              ),
+              child: Center(
+                child: Text(
+                  '${index + 1}',
+                  style: const TextStyle(color: Colors.white, fontSize: 30),
+                ),
+              )),
+        ),
+      );
+    }
+
     return CustomScrollView(
       slivers: [
         const SliverToBoxAdapter(child: HomeCategory()),
@@ -149,42 +215,10 @@ class _HomeRefreshPage1State extends State<HomeRefreshPage1> {
             )),
           ],
         )),
-        ValueListenableBuilder<int>(
-          valueListenable: _gridCountNotifier,
-          builder: (_, count, child) {
-            return SliverPadding(
-                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
-                  sliver: SliverGrid(
-                    gridDelegate: SliverQuiltedGridDelegate(
-                      crossAxisCount: 4,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                      repeatPattern: QuiltedGridRepeatPattern.mirrored,
-                      pattern: [
-                        const QuiltedGridTile(3, 2),
-                        const QuiltedGridTile(2, 2),
-                      ],
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      childCount: count,
-                      (context, index) => Container(
-                          // height: 50 * (index % 3 + 3).toDouble(),
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.white, width: 1),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${index + 1}',
-                              style: const TextStyle(color: Colors.white, fontSize: 30),
-                            ),
-                          )),
-                    ),
-                  ),
-                );
-          },
-        )
+        ValueListenableBuilder(
+            valueListenable: _gridCountNotifier,
+            builder: (_, count, child) => SliverPadding(
+                padding: const EdgeInsets.only(left: 10, right: 10, top: 10), sliver: buildSliverGrid(count))),
       ],
     );
   }
@@ -227,7 +261,7 @@ class _HomeRefreshPage1State extends State<HomeRefreshPage1> {
             );
           },
         ),
-        child: buildContent(context),
+        child: _buildContent(context),
         onRefresh: () async {
           print('-----onRefresh');
           await Future.delayed(const Duration(milliseconds: 1000));
