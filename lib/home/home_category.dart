@@ -78,10 +78,69 @@ class _CategoryList extends StatefulWidget {
   final List<CategoryType> dataList;
 
   @override
-  State createState() => _CategoryListState();
+  State createState() => _CategoryListState2();
 }
 
-class _CategoryListState extends State<_CategoryList> with AutomaticKeepAliveClientMixin {
+class _CategoryListState2 extends State<_CategoryList> with SingleTickerProviderStateMixin {
+  // late int _selectedId;
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    // _selectedId = widget.dataList[0].id;
+    _tabController = TabController(length: widget.dataList.length, vsync: this);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var themeData = Theme.of(context);
+    return Theme(
+        data: themeData.copyWith(
+            colorScheme: themeData.colorScheme.copyWith(surfaceVariant: Colors.transparent),
+            indicatorColor: Colors.transparent,
+            primaryColor: Colors.black),
+        child: TabBar(
+          // onTap: (index) {
+          //   print('点击了${widget.dataList[index].name}');
+          //   setState(() {
+          //     // _selectedId = widget.dataList[index].id;
+          //   });
+          // },
+          isScrollable: true,
+          indicatorColor: Colors.transparent,
+          controller: _tabController,
+          labelPadding: EdgeInsets.zero,
+          labelColor: Colors.black,
+          labelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          unselectedLabelColor: grey1,
+          unselectedLabelStyle: const TextStyle(fontSize: 16),
+          tabs: widget.dataList.map((e) => _buildItem(e)).toList(),
+        ));
+  }
+
+  Widget _buildItem(CategoryType item) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16),
+      child: Text(
+        item.name,
+        // style: TextStyle(
+        //     fontSize: selected ? 18 : 16,
+        //     fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+        //     color: selected ? Colors.black : grey1)
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+}
+
+// 用Listview.builder实现的横线滚动列表
+class _CategoryListState1 extends State<_CategoryList> with AutomaticKeepAliveClientMixin {
   late int _selectedIndex;
 
   @override
