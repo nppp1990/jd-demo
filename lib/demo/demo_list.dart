@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:jd_demo/demo/demo_frame_callback.dart';
+import 'package:jd_demo/demo/demo_refresh2.dart';
 import 'package:jd_demo/demo/demo_shiny.dart';
 import 'package:jd_demo/demo/demo_smooth_page_indicator.dart';
 import 'package:jd_demo/demo/demo_staggered_grid.dart';
@@ -47,6 +49,24 @@ class DemoList extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const TwoLevelPageDemo()),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('frame callback'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TestFrameCallback()),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('EasyRefresh Demo'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TabBarViewPage()),
                 );
               },
             ),

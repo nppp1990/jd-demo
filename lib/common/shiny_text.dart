@@ -44,12 +44,16 @@ class _AutoShinyTextState extends State<AutoShinyText> with SingleTickerProvider
           });
         } else if (status == AnimationStatus.dismissed) {
           Future.delayed(widget.interval, () {
-            _controller.forward();
+            if (mounted) {
+              _controller.forward();
+            }
           });
         }
       });
     Future.delayed(widget.interval, () {
-      _controller.forward();
+      if (mounted) {
+        _controller.forward();
+      }
     });
   }
 

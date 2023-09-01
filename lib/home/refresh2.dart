@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:easy_refresh/easy_refresh.dart';
+import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:jd_demo/common/constant.dart';
 import 'package:jd_demo/common/utils/screen_util.dart';
@@ -8,7 +10,6 @@ import 'package:jd_demo/home/home_animation_search.dart';
 import 'package:jd_demo/home/home_grid_category.dart';
 import 'package:loop_page_view/loop_page_view.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeRefreshPage2 extends StatefulWidget {
@@ -18,42 +19,88 @@ class HomeRefreshPage2 extends StatefulWidget {
   State createState() => _HomeRefreshPage2State();
 }
 
-class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
-  static const double _anchorDistance = 800;
+class _HomeRefreshPage2State extends State<HomeRefreshPage2> with SingleTickerProviderStateMixin {
+  static const double _anchorDistance = 1000;
+  static const _categoryList = [
+    '附近门店',
+    '逛超市',
+    '家电',
+    '电脑',
+    '生活',
+    '服饰',
+    '吃喝玩乐',
+    '食品',
+    '母婴',
+    '图书',
+    '运动',
+    '汽车',
+    '服务',
+    '拍卖',
+    '房产',
+  ];
 
-  late RefreshController _refreshController;
+  late EasyRefreshController _refreshController;
   late ScrollController _scrollController;
+  late TabController _tabController;
 
   // 列表页加数据count
-  late ValueNotifier<int> _listCountNotifier;
+  late List<ValueNotifier<int>> _notifierList;
   late ValueNotifier<bool> _showAnchorNotifier;
+
+  final GlobalKey<ExtendedNestedScrollViewState> _nestedScrollKey = GlobalKey();
 
   @override
   void initState() {
     var homeSearch2Opacity = context.read<HomeSearch2Opacity>();
     super.initState();
-    _refreshController = RefreshController();
+    _refreshController = EasyRefreshController(
+      controlFinishRefresh: true,
+      controlFinishLoad: true,
+    );
     _scrollController = ScrollController()
       ..addListener(() {
         final offset = _scrollController.offset;
-        if (_refreshController.headerStatus == RefreshStatus.idle) {
-          if (offset < 0) {
-            homeSearch2Opacity.opacity = 1;
-          } else if (offset < homeLocationHeight) {
-            homeSearch2Opacity.opacity = 1 - offset / homeLocationHeight;
-          } else {
-            homeSearch2Opacity.opacity = 0;
-          }
-        }
-        if (offset > _anchorDistance) {
-          _showAnchorNotifier.value = true;
+        // print('---offset111: $offset}---${_scrollController.position.maxScrollExtent}');
+        if (offset < homeLocationHeight) {
+          homeSearch2Opacity.opacity = 1 - offset / homeLocationHeight;
         } else {
-          _showAnchorNotifier.value = false;
+          homeSearch2Opacity.opacity = 0;
         }
-        print('scrollController: ${_scrollController.offset}---statue: ${_refreshController.headerStatus}');
       });
-    _listCountNotifier = ValueNotifier(10);
+    _notifierList = _categoryList.map((e) => ValueNotifier(10)).toList();
     _showAnchorNotifier = ValueNotifier(false);
+    _tabController = TabController(length: _categoryList.length, vsync: this)
+      ..addListener(() {
+        if (_tabController.indexIsChanging) {
+          return;
+        }
+        bool isOuterScrollToMax = _scrollController.offset == _scrollController.position.maxScrollExtent;
+        Future.delayed(Duration.zero, () {
+          if (isOuterScrollToMax) {
+            _checkShowAnchor();
+          } else {
+            _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 200), curve: Curves.ease);
+          }
+        });
+      });
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      print('------FrameCallback');
+      var innerController = _nestedScrollKey.currentState!.innerController;
+      innerController.addListener(() {
+        // print('----size:${innerController.positions.length}---offset:${_nestedScrollKey.currentState?.innerPositions.first.pixels}');
+        _checkShowAnchor();
+      });
+    });
+  }
+
+  _checkShowAnchor() {
+    final offset = _nestedScrollKey.currentState!.innerPositions.first.pixels;
+    if (offset >= _anchorDistance) {
+      _showAnchorNotifier.value = true;
+    } else {
+      _showAnchorNotifier.value = false;
+    }
   }
 
   @override
@@ -63,81 +110,124 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
         Container(
           color: homeBgColor2,
           padding: EdgeInsets.only(top: getStatusHeight(context) + homeHeader1),
-          child: SmartRefresher(
-            enablePullDown: true,
-            enablePullUp: true,
-            controller: _refreshController,
-            scrollController: _scrollController,
-            header: const ClassicHeader(),
-            onRefresh: () async {
-              await Future.delayed(const Duration(seconds: 2));
-              _listCountNotifier.value = 10;
-              _refreshController.refreshCompleted();
-            },
-            onLoading: () async {
-              await Future.delayed(const Duration(seconds: 2));
-              _listCountNotifier.value = _listCountNotifier.value + 10;
-              _refreshController.loadComplete();
-            },
-            child: CustomScrollView(
-              slivers: [
-                const SliverToBoxAdapter(child: HomeLocation()),
-                SliverPersistentHeader(
-                    floating: true,
-                    delegate: _HomeHeaderDelegate(
-                        height: homeSearch2 + homeCategoryHeight3 + 16, child: const HomeFloatingHeader())),
-                const SliverToBoxAdapter(child: HomeBanner()),
-                const SliverToBoxAdapter(
-                  child: SizedBox(
-                    height: 10,
-                  ),
-                ),
-                const SliverToBoxAdapter(
-                    child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: HomeGridCategoryLayout2(),
-                )),
-                SliverPersistentHeader(
-                    pinned: true,
-                    // floating: true,
-                    delegate: _HomeHeaderDelegate(child: const HomeCategoryTabBar(), height: homeCategoryHeight2)),
-                ValueListenableBuilder<int>(
-                    valueListenable: _listCountNotifier,
-                    builder: (context, value, _) => SliverList.builder(
-                          itemBuilder: (BuildContext context, int index) {
-                            if (index % 4 == 3) {
-                              return Container(
-                                height: 100,
-                                margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
-                                decoration: BoxDecoration(
-                                  color: Colors.yellow[100],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Center(
-                                  child: Text('这是广告：$index'),
-                                ),
-                              );
-                            } else {
-                              return Container(
-                                height: 200,
-                                margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    '普通list item：$index',
-                                    style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                          itemCount: value,
-                        )),
-              ],
+          child: EasyRefresh.builder(
+            header: const ClassicHeader(
+              position: IndicatorPosition.locator,
+              clamping: true,
             ),
+            footer: const ClassicFooter(position: IndicatorPosition.locator),
+            controller: _refreshController,
+            // 因为用的NestedScrollView，所以这里无效
+            // scrollController: _scrollController,
+            onRefresh: () async {
+              print('----onRefresh');
+              await Future.delayed(const Duration(seconds: 2));
+              for (var notifier in _notifierList) {
+                notifier.value = 10;
+              }
+              _refreshController.resetFooter();
+              _refreshController.finishRefresh();
+            },
+            onLoad: () async {
+              await Future.delayed(const Duration(seconds: 2));
+              _notifierList[_tabController.index].value += 10;
+              _refreshController.finishLoad();
+            },
+            childBuilder: (BuildContext context, ScrollPhysics physics) {
+              return ExtendedNestedScrollView(
+                  onlyOneScrollInBody: true,
+                  key: _nestedScrollKey,
+                  controller: _scrollController,
+                  physics: physics,
+                  headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                        const HeaderLocator.sliver(clearExtent: false),
+                        const SliverToBoxAdapter(child: HomeLocation()),
+                        SliverPersistentHeader(
+                            floating: true,
+                            delegate: _HomeHeaderDelegate(
+                                height: homeSearch2 + homeCategoryHeight3 + 16, child: const HomeFloatingHeader())),
+                        const SliverToBoxAdapter(child: HomeBanner()),
+                        const SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: 10,
+                          ),
+                        ),
+                        const SliverToBoxAdapter(
+                            child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: HomeGridCategoryLayout2(),
+                        )),
+                        SliverOverlapAbsorber(
+                          handle: ExtendedNestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                          sliver: SliverPersistentHeader(
+                              pinned: true,
+                              // floating: true,
+                              delegate: _HomeHeaderDelegate(
+                                  child: HomeCategoryTabBar(
+                                    tabController: _tabController,
+                                    data: _categoryList,
+                                  ),
+                                  height: homeCategoryHeight2)),
+                        ),
+                      ],
+                  // body: Container(color: Colors.yellow,),
+                  body: TabBarView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    controller: _tabController,
+                    children: _categoryList.asMap().entries.map((e) {
+                      final index = e.key;
+                      final name = e.value;
+                      return ValueListenableBuilder(
+                        valueListenable: _notifierList[index],
+                        builder: (context, value, child) {
+                          return _AutomaticKeepAlive(
+                            child: CustomScrollView(
+                              // key: PageStorageKey(name),
+                              physics: physics,
+                              slivers: [
+                                SliverOverlapInjector(
+                                    handle: ExtendedNestedScrollView.sliverOverlapAbsorberHandleFor(context)),
+                                SliverList(
+                                  delegate: SliverChildBuilderDelegate((context, index) {
+                                    if (index % 4 == 3) {
+                                      return Container(
+                                        height: 100,
+                                        margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.yellow[100],
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Center(
+                                          child: Text('这是广告：$index'),
+                                        ),
+                                      );
+                                    } else {
+                                      return Container(
+                                        height: 200,
+                                        margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            '$name：$index',
+                                            style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  }, childCount: value),
+                                ),
+                                const FooterLocator.sliver(),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    }).toList(),
+                  ));
+            },
           ),
         ),
         Positioned(
@@ -149,13 +239,27 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> {
                 visible: value,
                 child: child!,
               ),
-              child: GestureDetector(onTap: () {
-                _showAnchorNotifier.value = false;
-                _scrollController.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.ease);
-              }, child: const RocketAnchor()),
+              child: GestureDetector(
+                  onTap: () {
+                    _showAnchorNotifier.value = false;
+                    _scrollController.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.ease);
+                  },
+                  child: const RocketAnchor()),
             )),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    for (var notifier in _notifierList) {
+      notifier.dispose();
+    }
+    _showAnchorNotifier.dispose();
+    _scrollController.dispose();
+    _refreshController.dispose();
+    super.dispose();
   }
 }
 
@@ -431,38 +535,21 @@ class _HomeBannerState extends State<HomeBanner> {
 }
 
 class HomeCategoryTabBar extends StatefulWidget {
-  const HomeCategoryTabBar({super.key});
+  final TabController tabController;
+  final List<String> data;
+
+  const HomeCategoryTabBar({super.key, required this.tabController, required this.data});
 
   @override
   State<StatefulWidget> createState() => _HomeCategoryTabBarState();
 }
 
 class _HomeCategoryTabBarState extends State<HomeCategoryTabBar> with SingleTickerProviderStateMixin {
-  static const _categoryList = [
-    '附近门店',
-    '逛超市',
-    '家电',
-    '电脑',
-    '生活',
-    '服饰',
-    '吃喝玩乐',
-    '食品',
-    '母婴',
-    '图书',
-    '运动',
-    '汽车',
-    '服务',
-    '拍卖',
-    '房产',
-  ];
-
-  late TabController _tabController;
   late int _selectedIndex;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _categoryList.length, vsync: this);
     _selectedIndex = 0;
   }
 
@@ -472,7 +559,7 @@ class _HomeCategoryTabBarState extends State<HomeCategoryTabBar> with SingleTick
     return Container(
       color: homeBgColor2,
       height: homeCategoryHeight2,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      // padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Center(
         child: Theme(
           data: themeData.copyWith(
@@ -488,17 +575,17 @@ class _HomeCategoryTabBarState extends State<HomeCategoryTabBar> with SingleTick
                 });
               },
               isScrollable: true,
-              controller: _tabController,
+              controller: widget.tabController,
               labelPadding: EdgeInsets.zero,
               indicatorColor: Colors.transparent,
               labelColor: Colors.green,
               unselectedLabelColor: Colors.black,
-              tabs: _categoryList.asMap().entries.map((e) {
+              tabs: widget.data.asMap().entries.map((e) {
                 var index = e.key;
                 var value = e.value;
                 return Container(
                   height: 30,
-                  margin: const EdgeInsets.only(right: 10),
+                  margin: const EdgeInsets.only(left: 10),
                   decoration: BoxDecoration(
                     color: _selectedIndex == index ? Colors.green[100] : Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -514,10 +601,27 @@ class _HomeCategoryTabBarState extends State<HomeCategoryTabBar> with SingleTick
       ),
     );
   }
+}
+
+class _AutomaticKeepAlive extends StatefulWidget {
+  final Widget child;
+
+  const _AutomaticKeepAlive({
+    Key? key,
+    required this.child,
+  }) : super(key: key);
 
   @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+  State<_AutomaticKeepAlive> createState() => _AutomaticKeepAliveState();
+}
+
+class _AutomaticKeepAliveState extends State<_AutomaticKeepAlive> with AutomaticKeepAliveClientMixin {
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
