@@ -135,6 +135,7 @@ class _HomeRefreshPage2State extends State<HomeRefreshPage2> with SingleTickerPr
             },
             childBuilder: (BuildContext context, ScrollPhysics physics) {
               return ExtendedNestedScrollView(
+                  floatHeaderSlivers: true,
                   onlyOneScrollInBody: true,
                   key: _nestedScrollKey,
                   controller: _scrollController,
@@ -574,6 +575,7 @@ class _HomeCategoryTabBarState extends State<HomeCategoryTabBar> with SingleTick
                   _selectedIndex = index;
                 });
               },
+              tabAlignment: TabAlignment.start,
               isScrollable: true,
               controller: widget.tabController,
               labelPadding: EdgeInsets.zero,

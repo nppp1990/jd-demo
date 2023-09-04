@@ -101,6 +101,7 @@ class _CategoryListState2 extends State<_CategoryList> with SingleTickerProvider
             indicatorColor: Colors.transparent,
             primaryColor: Colors.black),
         child: TabBar(
+          tabAlignment: TabAlignment.start,
           // onTap: (index) {
           //   print('点击了${widget.dataList[index].name}');
           //   setState(() {
