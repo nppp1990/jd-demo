@@ -2,15 +2,13 @@
 
 A new Flutter project.
 
-## Getting Started
+![home](https://raw.github.com/nppp1990/jd-demo/master/home.jpg)
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+## Animation Show
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+This video below is the screen record of the demo.(Maybe you need to wait for a moment)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![record](https://raw.github.com/nppp1990/jd-demo/master/record.gif)
+
+[view the gif](record.gif)

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:jd_demo/demo/demo_frame_callback.dart';
+import 'package:jd_demo/demo/demo_nested_scroll.dart';
 import 'package:jd_demo/demo/demo_refresh2.dart';
 import 'package:jd_demo/demo/demo_shiny.dart';
 import 'package:jd_demo/demo/demo_smooth_page_indicator.dart';
 import 'package:jd_demo/demo/demo_staggered_grid.dart';
 import 'package:jd_demo/demo/demo_two_level_page.dart';
+
+import 'demo_refresh3.dart';
 
 
 class DemoList extends StatelessWidget {
@@ -67,6 +70,24 @@ class DemoList extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const TabBarViewPage()),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('EasyRefresh Demo2'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TabBarViewPage2()),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('nested scroll view'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NestedScrollViewDemo1()),
                 );
               },
             ),
